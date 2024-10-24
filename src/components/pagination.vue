@@ -79,32 +79,33 @@ const isPrevMoreVisible = ref(false)
 const isNextMoreVisible = ref(false)
 const pageCount =total % perpage === 0 ? total /perpage : Math.floor(total / perpage) + 1
 
-const pagerCount = 4
+const pagerCount = 4 //一次
 
 
-const pagers = computed(() => {
+const pagers = computed(() => { 
+  //分別判斷要不要顯示前後的...,但真正控制是否顯示...的判斷是在watchEffect，此處是利用是否有...來塞入相對應需要的頁碼
   let showPrevMore = false
   let showNextMore = false
   const halfPageCount = (pagerCount - 1) / 2
-  if (pageCount > pagerCount) {
-    if (current.value > pagerCount - halfPageCount) {
+  if (pageCount > pagerCount) { 
+    if (current.value > pagerCount - halfPageCount) { //顯示前...
       showPrevMore = true  
     }
-    if (current.value < pageCount - halfPageCount) {
+    if (current.value < pageCount - halfPageCount) { //顯示後...
       showNextMore = true
     }
   }
   const array = []
-  if (showPrevMore && !showNextMore) {
-    const startPage = pageCount - (pagerCount - 2)
+  if (showPrevMore && !showNextMore) { //靠近頁尾
+    const startPage = pageCount - (pagerCount - 2) 
     for (let i = startPage; i < pageCount; i++) {
       array.push(i)     
     }
-  } else if (!showPrevMore && showNextMore) {
+  } else if (!showPrevMore && showNextMore) { //靠近頁首
     for (let i = 2; i < pagerCount; i++) {
       array.push(i)    
     }
-  } else if (showPrevMore && showNextMore) {
+  } else if (showPrevMore && showNextMore) { //位於中間前後都要
     const offset = Math.floor(pagerCount / 2) - 1
     for (let i = current.value - offset; i <= current.value + offset; i++) {
       array.push(i)
