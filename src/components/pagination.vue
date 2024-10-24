@@ -21,7 +21,7 @@
       </li>
       <li
         class="more"
-        v-if="showPrevMore"
+        v-if="isPrevMoreVisible"
       >
         ...
       </li>
@@ -35,7 +35,7 @@
       </li>
       <li
         class="more"
-        v-if="showNextMore"
+        v-if="isNextMoreVisible"
       >
        ...
       </li>
@@ -75,15 +75,12 @@ const total= 400
 const perpage = 35
 
 const current = ref(currentPage)
-const showPrevMore = ref(false)
-const showNextMore = ref(false)
+const isPrevMoreVisible = ref(false)
+const isNextMoreVisible = ref(false)
 const pageCount =total % perpage === 0 ? total /perpage : Math.floor(total / perpage) + 1
-console.log("total",total);
-console.log("pageCount",pageCount);
 
 const pagerCount = 4
 
-const emit = defineEmits(["change"])
 
 const pagers = computed(() => {
   let showPrevMore = false
@@ -101,22 +98,18 @@ const pagers = computed(() => {
   if (showPrevMore && !showNextMore) {
     const startPage = pageCount - (pagerCount - 2)
     for (let i = startPage; i < pageCount; i++) {
-      array.push(i)
+      array.push(i)     
     }
   } else if (!showPrevMore && showNextMore) {
     for (let i = 2; i < pagerCount; i++) {
-      array.push(i)
+      array.push(i)    
     }
   } else if (showPrevMore && showNextMore) {
     const offset = Math.floor(pagerCount / 2) - 1
     for (let i = current.value - offset; i <= current.value + offset; i++) {
       array.push(i)
     }
-  } else {
-    for (let i = 2; i < pageCount; i++) {
-      array.push(i)
-    }
-  }
+  } 
   return array
 })
 
@@ -126,24 +119,22 @@ const switchPage = (value) => {
   } else {
     current.value -= 1
   }
-  emit("change", current.value)
 }
 
 const jumpPage = (page) => {
   current.value = page
-  emit("change", current.value)
 }
 
 watchEffect(() => {
   const halfPageCount = (pagerCount - 1) / 2
-  showPrevMore.value = false
-  showNextMore.value = false
+  isPrevMoreVisible.value = false
+  isNextMoreVisible.value = false
   if (pageCount > pagerCount) {
     if (current.value > pagerCount - halfPageCount) {
-      showPrevMore.value = true
+      isPrevMoreVisible.value = true
     }
     if (current.value < pageCount - halfPageCount) {
-      showNextMore.value = true
+      isNextMoreVisible.value = true
     }
   }
 })
